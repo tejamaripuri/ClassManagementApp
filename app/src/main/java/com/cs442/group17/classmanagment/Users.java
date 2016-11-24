@@ -8,7 +8,6 @@ public class Users {
     private String _username;
     private String _password;
     private  String _name;
-
     public Users()
     {
 
@@ -20,6 +19,7 @@ public class Users {
         this._username = _username;
         this._password = _password;
         this._name = _name;
+        //this._isactive = _isactive;
     }
 
     public void set_password(String _password) {
@@ -53,6 +53,18 @@ public class Users {
     public int get_roleid() {
         return _roleid;
     }
+
+
+    public int get_isactive() {
+        return _isactive;
+    }
+
+    public void set_isactive(int _isactive) {
+        this._isactive = _isactive;
+    }
+
+    private int _isactive;
+
 
 
 }
