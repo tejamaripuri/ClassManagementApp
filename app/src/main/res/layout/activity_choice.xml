@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_choice"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+  android:layout_gravity="center"
+    android:orientation="vertical"
+    tools:context="com.cs442.group17.classmanagment.ChoiceActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+    <TextView
+        android:text="Login As:"
+        android:layout_marginTop="180dp"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:id="@+id/textView10"
+        android:textSize="24sp"
+
+       />
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+      android:layout_marginLeft="80dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/radioGroupChoice">
+
+        <RadioButton
+            android:text="Student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonStu"
+            android:layout_weight="1"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:text="Faculty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioButtonFac"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:textSize="18sp" />
+    </RadioGroup>
+    </LinearLayout>
+    <Button
+        android:text="Submit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSubmit"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_back"
+        android:textColor="#ffffff"
+        android:textSize="18dp"
+       />
+
+    <Button
+        android:text="LogOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonLogOut"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/button_background"
+        android:textColor="#ffffff"
+        android:textSize="18dp" />
+
+
+</LinearLayout>
