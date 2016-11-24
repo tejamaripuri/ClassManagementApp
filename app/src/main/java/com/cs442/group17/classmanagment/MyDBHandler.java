@@ -1,6 +1,5 @@
 package com.cs442.group17.classmanagment;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +9,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class MyDBHandler extends SQLiteOpenHelper {
 
@@ -23,6 +23,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
     private static final String USERS_COLUMN_USERNAME = "_username";
     private static final String USERS_COLUMN_PASSWORD = "_password";
     private static final String USERS_COLUMN_NAME = "_name";
+    private static final String USERS_COLUMN_IsActive = "_isactive";
 
     //Students Table
     private static final String TABLE_STUDENTS = "students";
@@ -95,7 +96,8 @@ public class MyDBHandler extends SQLiteOpenHelper {
                 USERS_COLUMN_RoleID + " INTEGER, " +
                 USERS_COLUMN_USERNAME + " TEXT, " +
                 USERS_COLUMN_PASSWORD + " TEXT, " +
-                USERS_COLUMN_NAME + " TEXT " +
+                USERS_COLUMN_NAME + " TEXT, " +
+                USERS_COLUMN_IsActive + " INTEGER " +
                 ");");
 
         //Student Table Creation
@@ -175,31 +177,65 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //Add User at Register
-    public boolean addUser(Users user){
+    public int addUser(Users user, int cId){
+        int userId = 0;
         SQLiteDatabase db = getWritableDatabase();
         try
         {
             String query = "SELECT * FROM " + TABLE_USERS + " WHERE " +
                     USERS_COLUMN_USERNAME + " LIKE \"" + user.get_username().toString() + "\";";
             Cursor c = db.rawQuery(query, null);
-            if(c.getCount() == 0)
+            if(c.getCount() != 0)
             {
-                ContentValues values = new ContentValues();
-                values.put(USERS_COLUMN_RoleID, user.get_roleid());
-                values.put(USERS_COLUMN_USERNAME, user.get_username());
-                values.put(USERS_COLUMN_PASSWORD, user.get_password());
-                values.put(USERS_COLUMN_NAME, user.get_name());
-                db.insert(TABLE_USERS, null, values);
-                return true;
+                int isActive = 0;
+                String query1 = "SELECT " + USERS_COLUMN_IsActive + ", " + USERS_COLUMN_ID + " FROM " + TABLE_USERS + " WHERE " + USERS_COLUMN_USERNAME + " LIKE \"" + user.get_username().toString() + "\";";
+                Cursor  cursor = db.rawQuery(query1,null);
+                if (cursor.moveToFirst()) {
+                    while (cursor.isAfterLast() != true) {
+                        isActive = Integer.parseInt(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_IsActive)));
+                        userId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(USERS_COLUMN_ID)));
+                        break;
+                    }
+                }
+                if(isActive == 0)
+                {
+                    int collId = getCollegeIdByUserId(userId, user.get_roleid());
+                    if(collId == cId)
+                    {
+                        if(user.get_roleid() == getRoleByUserId(userId))
+                        {
+                            db.execSQL("UPDATE " + TABLE_USERS + " SET " + USERS_COLUMN_IsActive + " = 1, " + USERS_COLUMN_NAME + " = \"" + user.get_name() + "\", " + USERS_COLUMN_PASSWORD + " = \"" + user.get_password() + "\" WHERE " + USERS_COLUMN_USERNAME +  " LIKE \"" + user.get_username().toString() + "\";");
+                            db.close();
+                            return  1;
+                        }
+                        else
+                        {
+                            db.close();
+                            return  4;
+                        }
+
+                    }
+                    else
+                    {
+                        db.close();
+                        return  3;
+                    }
+                }
+                else
+                {
+                    db.close();
+                    return 2;
+                }
             }
             else
             {
-                return false;
+                db.close();
+                return 9;
             }
         }
         catch (Exception e)
         {
-            return false;
+            return -99;
         }
         finally {
             db.close();
@@ -208,33 +244,40 @@ public class MyDBHandler extends SQLiteOpenHelper {
     }
 
     //Check User Credentials
-    public boolean checkLogin(String username, String password)
+    public boolean checkLogin(String username, String password, int collid)
     {
         Boolean auth = false;
+        int userId = 0;
+        int count = 0;
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_USERS + " WHERE " +
+        String query = "SELECT "+ USERS_COLUMN_ID +" FROM " + TABLE_USERS + " WHERE " +
                 USERS_COLUMN_USERNAME + " LIKE \"" + username + "\" AND " +
-                USERS_COLUMN_PASSWORD + " =\"" + password + "\";";
+                USERS_COLUMN_PASSWORD + " =\"" + password + "\" AND " + USERS_COLUMN_IsActive + "= 1;";
         try
         {
             Cursor c = db.rawQuery(query, null);
             if(c.getCount() != 0)
             {
-                auth = true;
+                if (c.moveToFirst()) {
+                    while (c.isAfterLast() != true) {
+                        userId =  Integer.parseInt(c.getString(c.getColumnIndex(USERS_COLUMN_ID)));
+                        break;
+                    }
+                }
+                String queryStu = "SELECT * FROM " + TABLE_STUDENTS + " WHERE " + STUDENT_COLUMN_UserID + " = " + userId + " AND " + STUDENT_COLUMN_CollegeID + " = " + collid;
+                String queryFac = "SELECT * FROM " + TABLE_FACULTY + " WHERE " + FACULTY_COLUMN_UserID + " = " + userId + " AND " + FACULTY_COLUMN_CollegeID + " = " + collid ;
+                Cursor c1 = db.rawQuery(queryStu, null);
+                count = c1.getCount();
+                if(count == 0)
+                {
+                    c1 = db.rawQuery(queryFac, null);
+                    count = count + c1.getCount();
+                }
+                if(count != 0)
+                {
+                    auth = true;
+                }
             }
-
-            //Iteration CODE
-        /*c.moveToFirst();
-
-        while(!c.isAfterLast())
-        {
-            if(c.getString(c.getColumnIndex("_username"))!=null)
-            auth = true;
-        }*/
-           /* if(c.getCount() == 1){
-                c.moveToFirst();
-                selection = c.getString(c.getColumnIndex(select));
-            }    */
         }
         catch (Exception e)
         {
@@ -251,31 +294,31 @@ public class MyDBHandler extends SQLiteOpenHelper {
         ArrayList<String> query = new ArrayList<>();
 
         //User Table Dummy Values
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student1@gmail.com\", \"1234\", \"student1\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student2@gmail.com\", \"1234\", \"student2\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student3@gmail.com\", \"1234\", \"student3\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student4@gmail.com\", \"1234\", \"student4\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student5@gmail.com\", \"1234\", \"student5\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student6@gmail.com\", \"1234\", \"student6\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student7@gmail.com\", \"1234\", \"student7\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student8@gmail.com\", \"1234\", \"student8\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student9@gmail.com\", \"1234\", \"student9\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student10@gmail.com\", \"1234\", \"student10\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student11@gmail.com\", \"1234\", \"student11\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student12@gmail.com\", \"1234\", \"student12\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student13@gmail.com\", \"1234\", \"student13\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student14@gmail.com\", \"1234\", \"student14\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student15@gmail.com\", \"1234\", \"student15\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student16@gmail.com\", \"1234\", \"student16\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student17@gmail.com\", \"1234\", \"student17\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student18@gmail.com\", \"1234\", \"student18\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student19@gmail.com\", \"1234\", \"student19\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(1, \"student20@gmail.com\", \"1234\", \"student20\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(2, \"faculty1@gmail.com\", \"1234\", \"faculty1\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(2, \"faculty2@gmail.com\", \"1234\", \"faculty2\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(2, \"faculty3@gmail.com\", \"1234\", \"faculty3\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(2, \"faculty4@gmail.com\", \"1234\", \"faculty4\")");
-        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ") VALUES(2, \"faculty5@gmail.com\", \"1234\", \"faculty5\")");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student1@gmail.com\", \"1234\", \"student1\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student2@gmail.com\", \"1234\", \"student2\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student3@gmail.com\", \"1234\", \"student3\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student4@gmail.com\", \"1234\", \"student4\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student5@gmail.com\", \"1234\", \"student5\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student6@gmail.com\", \"1234\", \"student6\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student7@gmail.com\", \"1234\", \"student7\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student8@gmail.com\", \"1234\", \"student8\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student9@gmail.com\", \"1234\", \"student9\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student10@gmail.com\", \"1234\", \"student10\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student11@gmail.com\", \"1234\", \"student11\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student12@gmail.com\", \"1234\", \"student12\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student13@gmail.com\", \"1234\", \"student13\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student14@gmail.com\", \"1234\", \"student14\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student15@gmail.com\", \"1234\", \"student15\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student16@gmail.com\", \"1234\", \"student16\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student17@gmail.com\", \"1234\", \"student17\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student18@gmail.com\", \"1234\", \"student18\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student19@gmail.com\", \"1234\", \"student19\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(1, \"student20@gmail.com\", \"1234\", \"student20\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(2, \"faculty1@gmail.com\", \"1234\", \"faculty1\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(2, \"faculty2@gmail.com\", \"1234\", \"faculty2\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(2, \"faculty3@gmail.com\", \"1234\", \"faculty3\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(2, \"faculty4@gmail.com\", \"1234\", \"faculty4\",0)");
+        query.add("INSERT INTO " + TABLE_USERS + " ("+ USERS_COLUMN_RoleID + ", " + USERS_COLUMN_USERNAME + ", " + USERS_COLUMN_PASSWORD + ", " + USERS_COLUMN_NAME + ", " + USERS_COLUMN_IsActive + ") VALUES(2, \"faculty5@gmail.com\", \"1234\", \"faculty5\",0)");
 
         //Student Table Dummy Values
         query.add("INSERT INTO " + TABLE_STUDENTS + " ("+ STUDENT_COLUMN_UserID + ", " + STUDENT_COLUMN_CollegeID + ", " + STUDENT_COLUMN_StudentID + ", " + STUDENT_COLUMN_SubjectIDs + ", " + STUDENT_COLUMN_Leaves + ", " + STUDENT_COLUMN_TotalDays + ") VALUES(1, 1, \"A0001\", \"1,2,3\", 0 , 100)");
@@ -328,9 +371,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
         query.add("INSERT INTO " + TABLE_NOTIFICATIONS + " ("+ NOTIFICATIONS_COLUMN_NotificationDetails + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedBy + ", " + NOTIFICATIONS_COLUMN_NotificationIntendedTo + ", " + NOTIFICATIONS_COLUMN_NotificationIsRead + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedOn + ") VALUES(\"Leave was requested by student2 on 11/4/2016\", 2, 22, 0, \"11/4/2016\")");
 
         //Colleges Table Dummy Values
-        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(1, \"IIT\")");
-        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(2, \"MIT\")");
-        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(3, \"UIC\")");
+        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(1, \"IIT - Illinois Institute of Technology\")");
+        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(2, \"MIT - Massachusetts Institute of Technology\")");
+        query.add("INSERT INTO " + TABLE_COLLEGES + " ("+ COLLEGES_COLUMN_CollegeID + ", " + COLLEGES_COLUMN_CollegeName + ") VALUES(3, \"UIC - University of Illinois at Chicago\")");
 
         for (int i = 0; i < query.size(); i++) {
             String value = query.get(i).toString();
@@ -486,6 +529,9 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
         query = "INSERT INTO " + TABLE_APPROVALS + " ("+ APPROVALS_COLUMN_ApprovalID + ", " + APPROVALS_COLUMN_InitiatedBy + ", " + APPROVALS_COLUMN_ApproverID + ", " + APPROVALS_COLUMN_IsApproved + ", " + APPROVALS_COLUMN_CreatedOn + ", " + APPROVALS_COLUMN_AutherisedOn +") VALUES("+ (maxApprovalId + 1)+", "+ userId +", "+ approverId + ", 0, \""+datestring+"\", \""+ date +"\")";
         db.execSQL(query);
+        query = "INSERT INTO " + TABLE_NOTIFICATIONS + " ("+ NOTIFICATIONS_COLUMN_NotificationDetails + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedBy + ", " + NOTIFICATIONS_COLUMN_NotificationIntendedTo + ", " + NOTIFICATIONS_COLUMN_NotificationIsRead + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedOn + ") VALUES(\"Leave Application\", " + userId + ", " + approverId + ", 0, \""+datestring+"\")";
+        db.execSQL(query);
+        db.close();
     }
 
     public int getApproverBySubjectId(int subjectId)
@@ -522,6 +568,89 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
 
         return names;
+    }
+
+    public ArrayList<String> getColleges() {
+
+        String name = "";
+        String query = "";
+        ArrayList<String> names = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        query = "SELECT " + COLLEGES_COLUMN_CollegeName + " FROM " + TABLE_COLLEGES ;
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                name =  c.getString(c.getColumnIndex(COLLEGES_COLUMN_CollegeName));
+                names.add(name);
+            } while (c.moveToNext());
+        }
+
+        return names;
+    }
+
+    public int getCollegeIdByCollegeName(String collegeName)
+    {
+        int collegeId = 0;
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + COLLEGES_COLUMN_CollegeID + " FROM " + TABLE_COLLEGES + " WHERE " + COLLEGES_COLUMN_CollegeName + " = \"" + collegeName + "\"";
+        Cursor  cursor = db.rawQuery(query,null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() != true) {
+                collegeId =  Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLLEGES_COLUMN_CollegeID)));
+                break;
+            }
+        }
+        return collegeId;
+    }
+
+    public int getCollegeIdByUserId(int userId, int roleId)
+    {
+        String query = "";
+        int collegeId = 0;
+        SQLiteDatabase db = getWritableDatabase();
+        String arg = "";
+        if(roleId == 1) {
+            query = "SELECT " + STUDENT_COLUMN_CollegeID + " FROM " + TABLE_STUDENTS + " WHERE " + STUDENT_COLUMN_UserID + " = " + userId;
+            arg = STUDENT_COLUMN_CollegeID;
+        }
+        else if (roleId == 2)
+        {
+            query = "SELECT " + FACULTY_COLUMN_CollegeID + " FROM " + TABLE_FACULTY + " WHERE " + FACULTY_COLUMN_UserID + " = " + userId;
+            arg = FACULTY_COLUMN_CollegeID;
+        }
+        Cursor  cursor = db.rawQuery(query,null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() != true) {
+                collegeId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(arg)));
+                break;
+            }
+        }
+        return collegeId;
+    }
+
+    public ArrayList getNotificatiosFromDB(int userId)
+    {
+        HashMap<Integer, Notifications> hmap = new HashMap<Integer, Notifications>();
+        ArrayList<Notifications> notificationCollection = new ArrayList<>();
+        Notifications notiObj;
+
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + NOTIFICATIONS_COLUMN_NotificationDetails + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedBy + ", " + NOTIFICATIONS_COLUMN_NotificationGeneratedOn + " FROM " + TABLE_NOTIFICATIONS
+                + " WHERE " + NOTIFICATIONS_COLUMN_NotificationIsRead + " = 0 AND " + NOTIFICATIONS_COLUMN_NotificationIntendedTo + " = " + userId;
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                notiObj = new Notifications();
+                notiObj.set_notificationdetails(c.getString(c.getColumnIndex(NOTIFICATIONS_COLUMN_NotificationDetails)));
+                notiObj.set_generatedby(Integer.parseInt(c.getString(c.getColumnIndex(NOTIFICATIONS_COLUMN_NotificationGeneratedBy))));
+                notiObj.set_generatedon(c.getString(c.getColumnIndex(NOTIFICATIONS_COLUMN_NotificationGeneratedOn)));
+
+                notificationCollection.add(notiObj);
+            } while (c.moveToNext());
+        }
+
+        return notificationCollection;
+
     }
 
 }

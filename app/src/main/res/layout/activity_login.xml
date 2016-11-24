@@ -14,6 +14,12 @@
         android:gravity="center"
 
     tools:context="com.cs442.group17.classmanagment.LoginActivity">
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner" />
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
