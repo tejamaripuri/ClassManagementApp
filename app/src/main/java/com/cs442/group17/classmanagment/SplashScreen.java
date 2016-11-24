@@ -26,7 +26,7 @@ public class SplashScreen extends Activity {
                 SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
                 String userNamePrefs = prefs.getString(userNamePref, null);
                 if (userNamePrefs == null) {
-                    Intent i = new Intent(SplashScreen.this, LoginActivity.class);
+                    Intent i = new Intent(SplashScreen.this, MainActivity.class);
                     startActivity(i);
                     finish();
                 }
