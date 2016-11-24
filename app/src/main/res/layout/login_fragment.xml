@@ -1,95 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/activity_login"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+
+    tools:context="com.cs442.group17.classmanagment.LoginActivity">
+
+    <Spinner
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner" />
 
-        tools:context="com.cs442.group17.classmanagment.LoginActivity">
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:inputType="textPersonName"
-            android:ems="10"
-            android:padding="10dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:id="@+id/editTextEmail"
-            android:layout_alignBaseline="@+id/textView8"
-            android:layout_alignBottom="@+id/textView8"
-            android:background="@drawable/edit_background"
-            android:hint="Enter Email......"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:padding="10dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:id="@+id/editTextEmail"
+        android:layout_alignBaseline="@+id/textView8"
+        android:layout_alignBottom="@+id/textView8"
+        android:background="@drawable/edit_background"
+        android:hint="Enter Email......"/>
 
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_below="@+id/editTextEmail"
-            android:layout_alignStart="@+id/editTextEmail"
-            android:id="@+id/editTextPass"
-            android:padding="10dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/edit_background"
-            android:hint="Enter Password"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="30dp"
-            android:gravity="center">
-
-            <Button
-                android:text="Login"
-                android:layout_width="150dp"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/buttonLogin"
-                android:layout_gravity="center"
-                android:background="@drawable/button_background"
-                android:textColor="#ffffff"
-                android:textSize="16dp"
-                android:id="@+id/buttonLogin" />
-
-
-
-            <Button
-                android:text="Register"
-                android:layout_width="150dp"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/buttonLogin"
-                android:background="@drawable/button_background"
-                android:textColor="#ffffff"
-                android:layout_marginLeft="12dp"
-                android:textSize="16dp"
-                android:layout_gravity="center"
-                android:id="@+id/buttonRegister" />
-        </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="#dbdbdb"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_below="@+id/editTextEmail"
+        android:layout_alignStart="@+id/editTextEmail"
+        android:id="@+id/editTextPass"
+        android:padding="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_background"
+        android:hint="Enter Password"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:gravity="center">
 
         <Button
-            android:text="Clear DB"
-            android:layout_width="280dp"
-            android:layout_height="55dp"
-
+            android:text="Login"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/buttonLogin"
             android:layout_gravity="center"
-            android:background="@drawable/button_back"
+            android:background="@drawable/button_background"
             android:textColor="#ffffff"
-            android:textSize="24dp"
-            android:layout_marginTop="40dp"
-            android:id="@+id/buttonClear" />
+            android:textSize="16dp"
+            android:id="@+id/buttonLogin" />
+
+
+
+        <Button
+            android:text="Register"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/buttonLogin"
+            android:background="@drawable/button_background"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="12dp"
+            android:textSize="16dp"
+            android:layout_gravity="center"
+            android:id="@+id/buttonRegister" />
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="#dbdbdb"/>
+
+    <Button
+        android:text="Clear DB"
+        android:layout_width="280dp"
+        android:layout_height="55dp"
+
+        android:layout_gravity="center"
+        android:background="@drawable/button_back"
+        android:textColor="#ffffff"
+        android:textSize="24dp"
+        android:layout_marginTop="40dp"
+        android:id="@+id/buttonClear" />
 </LinearLayout>
