@@ -38,6 +38,8 @@
         <activity android:name=".AttendenceStatsActivity" />
         <activity android:name=".ApprovalsActivity" />
         <activity android:name=".RegisterActivity" />
+
+        <service android:name=".NotiService" />
     </application>
 
 </manifest>

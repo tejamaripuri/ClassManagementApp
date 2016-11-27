@@ -94,6 +94,7 @@ public class ChoiceActivity extends AppCompatActivity {
     }
 
     public  void logout(View view){
+        stopService(new Intent(getBaseContext(), NotiService.class));
         SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();

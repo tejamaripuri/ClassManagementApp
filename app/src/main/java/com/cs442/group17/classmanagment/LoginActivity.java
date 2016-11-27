@@ -23,6 +23,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cs442.group17.classmanagment.SplashScreen.servicePref;
+
 public class LoginActivity extends AppCompatActivity {
 
     boolean doubleBackToExitPressedOnce = false;
@@ -99,9 +101,26 @@ public class LoginActivity extends AppCompatActivity {
                     String name = dbHandler.getNameById(userId);
                     roleId = dbHandler.getRoleByUserId(userId);
 
-                    checkNotifications(userId);
 
                     SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
+
+                    if(roleId == 2)
+                    {
+                        int isStarted = prefs.getInt(servicePref,0);
+                        if(isStarted != 1)
+                        {
+                            checkNotifications(userId);
+
+                            startService(new Intent(getBaseContext(), NotiService.class));
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt(servicePref, 1);
+                            editor.commit();
+                        }
+
+                    }
+
+
+
                     String userNamePrefs = prefs.getString(userNamePref, null);
                     if (userNamePrefs == null) {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -142,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void checkNotifications(int userId) {
+    public void checkNotifications(int userId) {
         ArrayList<Notifications> notiCollection = dbHandler.getNotificatiosFromDB(userId);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
@@ -166,6 +185,9 @@ public class LoginActivity extends AppCompatActivity {
         //Issuing Notification
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.notify(5526, notification.build());
+
+        dbHandler.makeNotiRead(userId);
+
     }
 
     private void clearPreferences() {

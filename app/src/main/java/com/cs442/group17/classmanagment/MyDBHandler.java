@@ -653,6 +653,14 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     }
 
+    public void makeNotiRead(int userId)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_NOTIFICATIONS + " SET " + NOTIFICATIONS_COLUMN_NotificationIsRead + " = 1 WHERE " + NOTIFICATIONS_COLUMN_NotificationIsRead + " = 0 AND " + NOTIFICATIONS_COLUMN_NotificationIntendedTo + " = " + userId;
+        db.execSQL(query);
+        db.close();
+    }
+
 }
 
 
