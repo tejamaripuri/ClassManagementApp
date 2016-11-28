@@ -94,25 +94,22 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     Toast.makeText(LoginActivity.this, "Email and Password are Mandatory.", Toast.LENGTH_SHORT).show();
                 }
-                else if(dbHandler.checkLogin(editTextEmail.getText().toString(), editTextPass.getText().toString(), collId))
+                else if(dbHandler.checkLogin(editTextEmail.getText().toString().trim(), editTextPass.getText().toString().trim(), collId))
                 {
-                    String em = editTextEmail.getText().toString();
+                    String em = editTextEmail.getText().toString().trim();
                     int userId = dbHandler.getUserIdByEmail(em);
                     String name = dbHandler.getNameById(userId);
                     roleId = dbHandler.getRoleByUserId(userId);
 
 
-                    SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
-
                     if(roleId == 2)
                     {
-                        int isStarted = prefs.getInt(servicePref,0);
+                        int isStarted = sharedpreferences.getInt(servicePref,0);
                         if(isStarted != 1)
                         {
                             checkNotifications(userId);
-
                             startService(new Intent(getBaseContext(), NotiService.class));
-                            SharedPreferences.Editor editor = prefs.edit();
+                            SharedPreferences.Editor editor = sharedpreferences.edit();
                             editor.putInt(servicePref, 1);
                             editor.commit();
                         }
@@ -121,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-                    String userNamePrefs = prefs.getString(userNamePref, null);
+                    String userNamePrefs = sharedpreferences.getString(userNamePref, null);
                     if (userNamePrefs == null) {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putString(userNamePref, name);
@@ -164,29 +161,31 @@ public class LoginActivity extends AppCompatActivity {
     public void checkNotifications(int userId) {
         ArrayList<Notifications> notiCollection = dbHandler.getNotificatiosFromDB(userId);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+        if(notiCollection.size() == 0) {
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
 
-        //Building Notification
-        notification.setSmallIcon(R.mipmap.ic_launcher);
-        notification.setTicker("Ticker.....");
-        notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("You have " + notiCollection.size() + " new approvals");
+            //Building Notification
+            notification.setSmallIcon(R.mipmap.ic_launcher);
+            notification.setTicker("Ticker.....");
+            notification.setWhen(System.currentTimeMillis());
+            notification.setContentTitle("You have " + notiCollection.size() + " new approvals");
 
-        //notification.setContentText("Body");
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        notification.setSound(alarmSound);
-        long[] vibrate = { 0, 100, 200, 300 };
-        notification.setVibrate(vibrate);
+            //notification.setContentText("Body");
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            notification.setSound(alarmSound);
+            long[] vibrate = {0, 100, 200, 300};
+            notification.setVibrate(vibrate);
 
-        Intent intent = new Intent(this, ClassSelStuActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
+            Intent intent = new Intent(this, ClassSelStuActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            notification.setContentIntent(pendingIntent);
 
-        //Issuing Notification
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(5526, notification.build());
+            //Issuing Notification
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(5526, notification.build());
 
-        dbHandler.makeNotiRead(userId);
+            dbHandler.makeNotiRead(userId);
+        }
 
     }
 

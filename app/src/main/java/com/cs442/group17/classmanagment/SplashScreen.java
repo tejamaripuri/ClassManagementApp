@@ -65,27 +65,31 @@ public class SplashScreen extends Activity {
     public void checkNotifications(int userId) {
         ArrayList<Notifications> notiCollection = dbHandler.getNotificatiosFromDB(userId);
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
+        if(notiCollection.size() == 0) {
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
 
-        //Building Notification
-        notification.setSmallIcon(R.mipmap.ic_launcher);
-        notification.setTicker("Ticker.....");
-        notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("You have " + notiCollection.size() + " new approvals");
+            //Building Notification
+            notification.setSmallIcon(R.mipmap.ic_launcher);
+            notification.setTicker("Ticker.....");
+            notification.setWhen(System.currentTimeMillis());
+            notification.setContentTitle("You have " + notiCollection.size() + " new approvals");
 
-        //notification.setContentText("Body");
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        notification.setSound(alarmSound);
-        long[] vibrate = { 0, 100, 200, 300 };
-        notification.setVibrate(vibrate);
+            //notification.setContentText("Body");
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            notification.setSound(alarmSound);
+            long[] vibrate = {0, 100, 200, 300};
+            notification.setVibrate(vibrate);
 
-        Intent intent = new Intent(this, ClassSelStuActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
+            Intent intent = new Intent(this, ClassSelStuActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            notification.setContentIntent(pendingIntent);
 
-        //Issuing Notification
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(5526, notification.build());
+            //Issuing Notification
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(5526, notification.build());
+
+            dbHandler.makeNotiRead(userId);
+        }
     }
 
 

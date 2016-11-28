@@ -106,6 +106,8 @@ public class NotiService extends Service {
             //Issuing Notification
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.notify(5526, notification.build());
+
+            dbHandler.makeNotiRead(userId);
         }
     }
 }

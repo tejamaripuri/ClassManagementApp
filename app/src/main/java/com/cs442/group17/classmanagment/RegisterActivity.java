@@ -74,6 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
                 if(rb.getText().equals("Student"))
                 {
                     regChoice = "Student";
+                    role = 1;
                 }
                 else
                 {
@@ -94,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                 else
                 {
                     collId = dbHandler.getCollegeIdByCollegeName(collegeName);
-                    Users user = new Users(role, editTextEmail.getText().toString(), editTextPassword.getText().toString(), editTextName.getText().toString());
+                    Users user = new Users(role, editTextEmail.getText().toString().trim(), editTextPassword.getText().toString().trim(), editTextName.getText().toString().trim());
                     int res = dbHandler.addUser(user, collId);
                     if(res == 1)
                     {
