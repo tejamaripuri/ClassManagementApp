@@ -65,7 +65,7 @@ public class SplashScreen extends Activity {
     public void checkNotifications(int userId) {
         ArrayList<Notifications> notiCollection = dbHandler.getNotificatiosFromDB(userId);
 
-        if(notiCollection.size() == 0) {
+        if(notiCollection.size() != 0) {
             NotificationCompat.Builder notification = new NotificationCompat.Builder(this);
 
             //Building Notification
