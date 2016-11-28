@@ -24,7 +24,7 @@ public class ApprovalsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_approvals);
 
-        sharedPreferences  = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedPreferences  = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         ListView listview= getListView();
@@ -34,8 +34,8 @@ public class ApprovalsActivity extends ListActivity {
 
         a = new ArrayList<>();
         b = new ArrayList<>();
-        a = dbHandler.getApprovals(sharedPreferences.getInt(LoginActivity.userIdPref, 0));
-        b = dbHandler.getApprovalsIds(sharedPreferences.getInt(LoginActivity.userIdPref, 0));
+        a = dbHandler.getApprovals(sharedPreferences.getInt(LoginFragment.userIdPref, 0));
+        b = dbHandler.getApprovalsIds(sharedPreferences.getInt(LoginFragment.userIdPref, 0));
 
         ArrayAdapter inClassNamesListAdap = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_checked,a);
        /* setListAdapter(new ArrayAdapter<String>(this,
