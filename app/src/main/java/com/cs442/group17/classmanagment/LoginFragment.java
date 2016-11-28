@@ -24,6 +24,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cs442.group17.classmanagment.SplashScreen.servicePref;
+
 /**
  * Created by USER on 23-11-16.
  */
@@ -42,6 +44,16 @@ public class LoginFragment extends Fragment {
     int collId;
     String collegeName;
 
+    public static final String RESULT_COLLEGEID = "RESULT_COLLEGEID";
+    private ResultListener resultListener;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        resultListener = (ResultListener) getActivity();//assumes this will get MainActivity
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login_fragment, container, false);
@@ -59,6 +71,10 @@ public class LoginFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 collegeName = adapterView.getItemAtPosition(i).toString();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(RESULT_COLLEGEID, collegeName);
+                resultListener.notifyResult(bundle);
             }
 
             @Override
@@ -97,9 +113,23 @@ public class LoginFragment extends Fragment {
                     String name = dbHandler.getNameById(userId);
                     roleId = dbHandler.getRoleByUserId(userId);
 
-                    checkNotifications(userId);
-
                     SharedPreferences prefs = getActivity().getSharedPreferences(MyPREFERENCES, getActivity().MODE_PRIVATE);
+
+                    if(roleId == 2)
+                    {
+                        int isStarted = prefs.getInt(servicePref,0);
+                        if(isStarted != 1)
+                        {
+                            checkNotifications(userId);
+
+                            getActivity().startService(new Intent(getActivity().getBaseContext(), NotiService.class));
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.putInt(servicePref, 1);
+                            editor.commit();
+                        }
+
+                    }
+
                     String userNamePrefs = prefs.getString(userNamePref, null);
                     if (userNamePrefs == null) {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -142,7 +172,7 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    private void checkNotifications(int userId) {
+    public void checkNotifications(int userId) {
         ArrayList<Notifications> notiCollection = dbHandler.getNotificatiosFromDB(userId);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(getActivity());
@@ -166,6 +196,8 @@ public class LoginFragment extends Fragment {
         //Issuing Notification
         NotificationManager nm = (NotificationManager) getActivity().getSystemService(getActivity().NOTIFICATION_SERVICE);
         nm.notify(5526, notification.build());
+
+        dbHandler.makeNotiRead(userId);
     }
 
     private void clearPreferences() {

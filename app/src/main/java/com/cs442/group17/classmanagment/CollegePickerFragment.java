@@ -19,10 +19,9 @@ import java.util.ArrayList;
 
 public class CollegePickerFragment extends ListFragment {
 
-    public static final String RESULT_COLLEGEID = "RESULT_COLLEGEID";
-
     private ArrayList<String> menuArray;
 
+    public static final String RESULT_COLLEGEID = "RESULT_COLLEGEID";
     private ResultListener resultListener;
 
     @Override
@@ -50,7 +49,7 @@ public class CollegePickerFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
                 Bundle bundle = new Bundle();
-                bundle.putString(RESULT_COLLEGEID, item);
+                bundle.putString(LoginFragment.RESULT_COLLEGEID, item);
                 resultListener.notifyResult(bundle);
             }
         });

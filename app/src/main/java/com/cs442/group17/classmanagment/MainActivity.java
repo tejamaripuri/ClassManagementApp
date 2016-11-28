@@ -15,35 +15,30 @@ import android.widget.Toast;
  */
 
 public class MainActivity extends FragmentActivity implements ResultListener {
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String collegePref = "collegePref";
 
     boolean doubleBackToExitPressedOnce = false;
+
+    private ResultListener resultListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //check college preference
-        //if preference has been set, load the logo display fragment
-        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
-
-
+        resultListener = (ResultListener)getSupportFragmentManager().findFragmentById(R.id.fragment1);
         Snackbar.make(findViewById(R.id.myCoordinatorLayout),"Welcome to Class Management Application",Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void notifyResult(Bundle bundle) {
-        String collegeID = bundle.getString(CollegePickerFragment.RESULT_COLLEGEID);
+        String collegeID = bundle.getString(LoginFragment.RESULT_COLLEGEID);
 
         Toast.makeText(this, "Logging in as a " + collegeID + " student!", Toast.LENGTH_LONG).show();
 
-        SharedPreferences prefs = getSharedPreferences(MyPREFERENCES, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(collegePref, collegeID);
-
-        //switch out fragement1
+        //notify fragment1 to reload image
+        Bundle bundle_logo = new Bundle();
+        bundle_logo.putString(LoginFragment.RESULT_COLLEGEID, collegeID);
+        resultListener.notifyResult(bundle_logo);
     }
 
     @Override
