@@ -166,6 +166,7 @@ public class LoginFragment extends Fragment {
                 clearPreferences();
             }
         });
+        buttonClear.setVisibility(View.GONE);
 
         return view;
     }
