@@ -13,6 +13,7 @@ public class CommunicateActivity extends AppCompatActivity {
     MyDBHandler dbHandler;
     String emails = "";
     int subjectId = 0;
+    int roleId;
     SharedPreferences sharedpreferences;
 
 
@@ -24,6 +25,7 @@ public class CommunicateActivity extends AppCompatActivity {
 
         dbHandler = new MyDBHandler(this, null, null, 1);
         sharedpreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
+        roleId = sharedpreferences.getInt(LoginFragment.userRoleIdPref, 0);
 
         Intent i = getIntent();
         subjectId = i.getIntExtra("subjectId", 0);
@@ -56,6 +58,33 @@ public class CommunicateActivity extends AppCompatActivity {
         {
             btnSend2.setVisibility(View.GONE);
         }
+
+        findViewById(R.id.activity_communicate).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Intent intent;
+                if (roleId == 1) {
+                    intent = new Intent(CommunicateActivity.this, CalenderActivity.class);
+                } else {
+                    intent = new Intent(CommunicateActivity.this, RosterActivity.class);
+                }
+
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                Intent intent;
+                if (roleId == 1) {
+                    intent = new Intent(CommunicateActivity.this, AttendenceActivity.class);
+                } else {
+                    intent = new Intent(CommunicateActivity.this, AttendenceStatsActivity.class);
+                }
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+        });
     }
 }
 

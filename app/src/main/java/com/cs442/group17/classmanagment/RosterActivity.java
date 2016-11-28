@@ -19,6 +19,7 @@ public class RosterActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     MyDBHandler dbHandler;
     int subjectId = 0;
+    int roleId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class RosterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_roster);
 
         sharedPreferences  = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
+        roleId = sharedPreferences.getInt(LoginFragment.userRoleIdPref, 0);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         Intent i = getIntent();
@@ -49,6 +51,33 @@ public class RosterActivity extends AppCompatActivity {
 
                 Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" + email));
                 intent.putExtra(Intent.EXTRA_TEXT, "sent from class management app.");
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.activity_roster).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Intent intent;
+                if (roleId == 1) {
+                    intent = new Intent(RosterActivity.this, AttendenceActivity.class);
+                } else {
+                    intent = new Intent(RosterActivity.this, ApprovalsActivity.class);
+                }
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                Intent intent;
+                if (roleId == 1) {
+                    intent = new Intent(RosterActivity.this, CalenderActivity.class);
+                } else {
+                    intent = new Intent(RosterActivity.this, CommunicateActivity.class);
+                }
+
+                intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
             }
         });

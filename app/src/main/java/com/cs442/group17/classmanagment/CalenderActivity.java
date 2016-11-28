@@ -131,7 +131,21 @@ public class CalenderActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.activity_calender).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Intent intent = new Intent(CalenderActivity.this, RosterActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
 
+            @Override
+            public void onSwipeRight() {
+                Intent intent = new Intent(CalenderActivity.this, CommunicateActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+        });
 
     }
     public static class DatePickerFragment extends DialogFragment
@@ -154,6 +168,8 @@ public class CalenderActivity extends AppCompatActivity {
             mDateDisplay .setText(String.valueOf(day) + "/"
                     + String.valueOf(month + 1) + "/" + String.valueOf(year));
         }
+
+
     }
 
 

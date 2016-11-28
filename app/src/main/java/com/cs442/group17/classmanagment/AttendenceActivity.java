@@ -2,6 +2,7 @@ package com.cs442.group17.classmanagment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,13 +29,12 @@ public class AttendenceActivity extends AppCompatActivity {
     String selection;
     Button btnSubmit;
     Location location;
+    int subjectId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendence);
-
-
 
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroupSelection);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -90,6 +90,24 @@ public class AttendenceActivity extends AppCompatActivity {
                 {
                     Toast.makeText(AttendenceActivity.this, "Absence Submitted.", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        Intent i = getIntent();
+        subjectId = i.getIntExtra("subjectId", 0);
+        findViewById(R.id.activity_attendence).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Intent intent = new Intent(AttendenceActivity.this, CommunicateActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                Intent intent = new Intent(AttendenceActivity.this, RosterActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
             }
         });
 

@@ -1,6 +1,7 @@
 package com.cs442.group17.classmanagment;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,8 @@ public class ApprovalsActivity extends ListActivity {
 
     SharedPreferences sharedPreferences;
     MyDBHandler dbHandler;
+
+    int subjectId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,24 @@ public class ApprovalsActivity extends ListActivity {
        /* setListAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_checked,appr));*/
         listview.setAdapter(inClassNamesListAdap);
+
+        Intent i = getIntent();
+        subjectId = i.getIntExtra("subjectId", 0);
+        findViewById(R.id.activity_roster).setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                Intent intent = new Intent(ApprovalsActivity.this, AttendenceStatsActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSwipeRight() {
+                Intent intent = new Intent(ApprovalsActivity.this, RosterActivity.class);
+                intent.putExtra("subjectId", subjectId);
+                startActivity(intent);
+            }
+        });
     }
 
     public void onListItemClick(ListView parent, View v, int position, long id){

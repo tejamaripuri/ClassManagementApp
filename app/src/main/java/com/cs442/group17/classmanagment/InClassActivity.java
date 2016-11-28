@@ -3,6 +3,11 @@ package com.cs442.group17.classmanagment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -11,6 +16,39 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+/*public class InClassActivity extends FragmentActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_in_class);
+
+        ViewPager pager = (ViewPager) findViewById(R.id.inClassViewPager);
+        pager.setAdapter(new TabPagerAdapter(getSupportFragmentManager()));
+    }
+
+    private class TabPagerAdapter extends FragmentPagerAdapter {
+
+        public TabPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            switch(pos) {
+
+                case 0: return FirstFragment.newInstance("FirstFragment, Instance 1");
+                case 1: return SecondFragment.newInstance("SecondFragment, Instance 1");
+                default: return ThirdFragment.newInstance("ThirdFragment, Default");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    }
+}*/
 
 public class InClassActivity extends AppCompatActivity {
 
