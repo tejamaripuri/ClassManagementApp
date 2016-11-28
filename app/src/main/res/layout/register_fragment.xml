@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_register"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        tools:context="com.cs442.group17.classmanagment.RegisterActivity">
+
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner2" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/editTextName"
+            android:hint="Name"
+            android:padding="10dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:background="@drawable/edit_background"
+
+            />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:layout_below="@+id/editTextName"
+
+            android:layout_marginTop="10dp"
+            android:hint="E-Mail"
+            android:padding="10dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:background="@drawable/edit_background"
+            android:id="@+id/editTextEmail" />
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:hint="Password"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:padding="10dp"
+            android:background="@drawable/edit_background"
+            android:id="@+id/editTextPassword"
+            android:layout_alignBaseline="@+id/textViewPassword"
+            android:layout_alignBottom="@+id/textViewPassword"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center">
+            <TextView
+                android:text="Role:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/editTextPassword"
+
+
+                android:id="@+id/textViewRole"
+                android:textSize="20dp" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupRegChoice"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:checkedButton="@+id/radioButtonStudent">
+
+                <RadioButton
+                    android:text="Student"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioButtonStudent"
+                    android:textSize="16dp"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:text="Faculty"
+                    android:layout_width="100dp"
+                    android:textSize="16dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radioButtonFaculty"
+                    android:layout_weight="1" />
+            </RadioGroup>
+        </LinearLayout>
+        <Button
+            android:text="Submit"
+            android:layout_width="140dp"
+            android:layout_height="45dp"
+            android:id="@+id/buttonRegister"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/button_background"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ffffff"
+            android:layout_marginTop="30dp"
+            android:textSize="17dp"
+            />
+
+
+
+
+    </LinearLayout>
+</ScrollView>
