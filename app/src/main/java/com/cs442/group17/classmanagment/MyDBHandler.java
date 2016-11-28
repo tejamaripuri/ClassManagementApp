@@ -556,7 +556,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String query = "";
         ArrayList<String> names = new ArrayList<>();
         SQLiteDatabase db = getWritableDatabase();
-        query = "SELECT " + APPROVALS_COLUMN_InitiatedBy + ", "+ APPROVALS_COLUMN_AutherisedOn + " FROM " + TABLE_APPROVALS + " WHERE " + APPROVALS_COLUMN_ApproverID + " = " + approverId;
+        query = "SELECT " + APPROVALS_COLUMN_InitiatedBy + ", "+ APPROVALS_COLUMN_AutherisedOn + " FROM " + TABLE_APPROVALS + " WHERE " + APPROVALS_COLUMN_IsApproved + " = 0 AND " + APPROVALS_COLUMN_ApproverID + " = " + approverId + " ORDER BY " + APPROVALS_COLUMN_ApprovalID;
         Cursor c = db.rawQuery(query, null);
         if (c.moveToFirst()) {
             do {
@@ -569,6 +569,31 @@ public class MyDBHandler extends SQLiteOpenHelper {
         }
 
         return names;
+    }
+
+    public ArrayList<Integer> getApprovalsIds(int approverId) {
+
+        int id = 0;
+        String query = "";
+        ArrayList<Integer> ids = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        query = "SELECT " + APPROVALS_COLUMN_ApprovalID + " FROM " + TABLE_APPROVALS + " WHERE " + APPROVALS_COLUMN_IsApproved + " = 0 AND " + APPROVALS_COLUMN_ApproverID + " = " + approverId + " ORDER BY " + APPROVALS_COLUMN_ApprovalID;
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                id = Integer.parseInt(c.getString(c.getColumnIndex(APPROVALS_COLUMN_ApprovalID)));
+                ids.add(id);
+            } while (c.moveToNext());
+        }
+
+        return ids;
+    }
+
+    public void approve(int flag, int approvalId)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_APPROVALS + " SET " + APPROVALS_COLUMN_IsApproved + " = " + flag + " WHERE " + APPROVALS_COLUMN_ApprovalID + " = " + approvalId;
+        db.execSQL(query);
     }
 
     public ArrayList<String> getColleges() {

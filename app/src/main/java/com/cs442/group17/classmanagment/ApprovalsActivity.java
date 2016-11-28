@@ -13,12 +13,8 @@ import java.util.ArrayList;
 
 public class ApprovalsActivity extends ListActivity {
 
-    String[] appr= {
-            "Teja 2 Days",
-            "Brian 1 Day",
-            "Chetan 10 Days",
-    };
     ArrayList<String> a;
+    ArrayList<Integer> b;
 
     SharedPreferences sharedPreferences;
     MyDBHandler dbHandler;
@@ -37,7 +33,9 @@ public class ApprovalsActivity extends ListActivity {
         listview.setTextFilterEnabled(true);
 
         a = new ArrayList<>();
+        b = new ArrayList<>();
         a = dbHandler.getApprovals(sharedPreferences.getInt(LoginActivity.userIdPref, 0));
+        b = dbHandler.getApprovalsIds(sharedPreferences.getInt(LoginActivity.userIdPref, 0));
 
         ArrayAdapter inClassNamesListAdap = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_checked,a);
        /* setListAdapter(new ArrayAdapter<String>(this,
@@ -50,13 +48,16 @@ public class ApprovalsActivity extends ListActivity {
         String msg = "";
         if(item.isChecked())
         {
+            dbHandler.approve(1, b.get(position));
              msg = " has Approved.";
         }
         else
         {
+            dbHandler.approve(0, b.get(position));
              msg = " has Disapproved.";
         }
         //Toast.makeText(this, appr[position] + " is Approved:" + item.isChecked(), Toast.LENGTH_SHORT).show();
+
         Toast.makeText(this, a.get(position) + msg , Toast.LENGTH_SHORT).show();
     }
 }
