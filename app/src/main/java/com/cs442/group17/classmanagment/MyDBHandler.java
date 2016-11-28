@@ -4,13 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
-import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -669,32 +663,53 @@ public class MyDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void copyDBToSDCard() {
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                String currentDBPath = "//data//com.cs442.group17.classmanagment//databases//"+DATABASE_NAME+"";
-                String backupDBPath = "backupcm.db";
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-
-                if (currentDB.exists()) {
-                    FileChannel src = new FileInputStream(currentDB).getChannel();
-                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                    dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    dst.close();
-                }
-
+    public String getEmailByName(String name)
+    {
+        String email = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + USERS_COLUMN_USERNAME + " FROM " + TABLE_USERS + " WHERE " + USERS_COLUMN_NAME + " = \"" + name +"\";";
+        Cursor  cursor = db.rawQuery(query,null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() != true) {
+                email =  cursor.getString(cursor.getColumnIndex(USERS_COLUMN_USERNAME));
+                break;
             }
+        }
+        return email;
+    }
 
-        }  catch (Exception e) {
-            Log.i("FO","exception="+e);
+    public String getEmailByUserId(int userId)
+    {
+        String email = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + USERS_COLUMN_USERNAME + " FROM " + TABLE_USERS + " WHERE " + USERS_COLUMN_ID + " = " + userId;
+        Cursor  cursor = db.rawQuery(query,null);
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() != true) {
+                email =  cursor.getString(cursor.getColumnIndex(USERS_COLUMN_USERNAME));
+                break;
+            }
+        }
+        return email;
+    }
+
+
+    public String getRosterEmailBySubjectID(int subjectId) {
+
+        String email = "";
+        String emails = "";
+        String query = "";
+        SQLiteDatabase db = getWritableDatabase();
+        query = "SELECT " + USERS_COLUMN_USERNAME + " FROM " + TABLE_USERS + " WHERE " + USERS_COLUMN_ID + " IN (SELECT " + STUDENT_COLUMN_UserID + " FROM " + TABLE_STUDENTS +  " WHERE " + STUDENT_COLUMN_SubjectIDs + " LIKE \"%" + subjectId + "%\")";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                email = c.getString(c.getColumnIndex(USERS_COLUMN_USERNAME));
+                emails = emails + ", " + email;
+            } while (c.moveToNext());
         }
 
-
+        return emails.substring(2);
     }
 
 }

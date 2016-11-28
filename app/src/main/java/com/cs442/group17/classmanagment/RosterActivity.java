@@ -2,8 +2,11 @@ package com.cs442.group17.classmanagment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -35,6 +38,20 @@ public class RosterActivity extends AppCompatActivity {
         namesListAdap = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,namestList);
         final ListView itemListView = (ListView) findViewById(R.id.rosterListView);
         itemListView.setAdapter(namesListAdap);
+
+
+        itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = String.valueOf(parent.getItemAtPosition(position));
+                String email = dbHandler.getEmailByName(item);
+
+
+                Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" + email));
+                intent.putExtra(Intent.EXTRA_TEXT, "sent from class management app.");
+                startActivity(intent);
+            }
+        });
 
     }
 
