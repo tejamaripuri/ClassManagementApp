@@ -27,7 +27,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"/>
-        <activity android:name=".LoginActivity"/>
         <activity android:name=".RosterActivity" />
         <activity android:name=".CalenderActivity" />
         <activity android:name=".CommunicateActivity" />

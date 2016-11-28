@@ -23,12 +23,12 @@ public class ClassSelStuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_sel_stu);
 
-        sharedPreferences  = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedPreferences  = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         classNamestList =new ArrayList<>();
 
-        classNamestList = dbHandler.getSubjectsByUserIdRoleId(sharedPreferences.getInt(LoginActivity.userIdPref,0), sharedPreferences.getInt(LoginActivity.userRoleIdPref,0));
+        classNamestList = dbHandler.getSubjectsByUserIdRoleId(sharedPreferences.getInt(LoginFragment.userIdPref,0), sharedPreferences.getInt(LoginFragment.userRoleIdPref,0));
 
         classNamesListAdap = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,classNamestList);
         final ListView itemListView = (ListView) findViewById(R.id.listViewStuClasses);

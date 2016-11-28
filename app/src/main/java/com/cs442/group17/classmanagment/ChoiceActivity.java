@@ -25,9 +25,9 @@ public class ChoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choice);
 
-        sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
-        final int roleId = dbHandler.getRoleByUserId(sharedpreferences.getInt(LoginActivity.userIdPref,0));
+        final int roleId = dbHandler.getRoleByUserId(sharedpreferences.getInt(LoginFragment.userIdPref,0));
 
         intent = new Intent(ChoiceActivity.this, ClassSelStuActivity.class);
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroupChoice);
@@ -51,7 +51,7 @@ public class ChoiceActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sharedpreferences.getInt(LoginActivity.userRoleIdPref,0) == selectedRole)
+                if(sharedpreferences.getInt(LoginFragment.userRoleIdPref,0) == selectedRole)
                 {
                     startActivity(intent);
                 }
@@ -95,11 +95,11 @@ public class ChoiceActivity extends AppCompatActivity {
 
     public  void logout(View view){
         stopService(new Intent(getBaseContext(), NotiService.class));
-        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences sharedpreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
-        intent = new Intent(ChoiceActivity.this, LoginActivity.class);
+        intent = new Intent(ChoiceActivity.this, LoginFragment.class);
         startActivity(intent);
     }
 }

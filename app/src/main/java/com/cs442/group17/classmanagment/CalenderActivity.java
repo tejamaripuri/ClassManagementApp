@@ -39,7 +39,7 @@ public class CalenderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calender);
 
-        sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         Intent i = getIntent();
@@ -61,7 +61,7 @@ public class CalenderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String date = mDateDisplay.getText().toString();
-                dbHandler.ApplyLeave(sharedPreferences.getInt(LoginActivity.userIdPref, 0), date, dbHandler.getApproverBySubjectId(subjectId));
+                dbHandler.ApplyLeave(sharedPreferences.getInt(LoginFragment.userIdPref, 0), date, dbHandler.getApproverBySubjectId(subjectId));
 
                 /*int day = 1;
                 int month = 1;

@@ -25,12 +25,12 @@ public class InClassActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_class);
 
-        sharedPreferences  = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedPreferences  = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         inClassNamestList =new ArrayList<>();
 
-        int roleId = sharedPreferences.getInt(LoginActivity.userRoleIdPref, 0);
+        int roleId = sharedPreferences.getInt(LoginFragment.userRoleIdPref, 0);
 
         if(roleId == 1)
         {

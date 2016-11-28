@@ -25,7 +25,7 @@ public class RosterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_roster);
 
-        sharedPreferences  = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedPreferences  = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
         dbHandler = new MyDBHandler(this, null, null, 1);
 
         Intent i = getIntent();

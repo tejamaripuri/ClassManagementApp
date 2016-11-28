@@ -72,7 +72,7 @@ public class NotiService extends Service {
 
     @Override
     public void onDestroy() {
-        SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences sharedpreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putInt(servicePref,0);
         editor.commit();

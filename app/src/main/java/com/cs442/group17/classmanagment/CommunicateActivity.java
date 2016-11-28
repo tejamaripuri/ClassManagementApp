@@ -23,7 +23,7 @@ public class CommunicateActivity extends AppCompatActivity {
         setContentView(R.layout.activity_communicate);
 
         dbHandler = new MyDBHandler(this, null, null, 1);
-        sharedpreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(LoginFragment.MyPREFERENCES, MODE_PRIVATE);
 
         Intent i = getIntent();
         subjectId = i.getIntExtra("subjectId", 0);
@@ -41,7 +41,7 @@ public class CommunicateActivity extends AppCompatActivity {
 
         Button btnSend2 = (Button) findViewById(R.id.button6);
 
-        if(sharedpreferences.getInt(LoginActivity.userRoleIdPref,0) != 2)
+        if(sharedpreferences.getInt(LoginFragment.userRoleIdPref,0) != 2)
         {
             btnSend2.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -45,9 +45,9 @@ public class SplashScreen extends Activity {
                 else
                 {
                     int isStarted = prefs.getInt(servicePref,0);
-                    if(isStarted != 1 && prefs.getInt(LoginActivity.userRoleIdPref,0) == 2)
+                    if(isStarted != 1 && prefs.getInt(LoginFragment.userRoleIdPref,0) == 2)
                     {
-                        checkNotifications(prefs.getInt(LoginActivity.userIdPref,0));
+                        checkNotifications(prefs.getInt(LoginFragment.userIdPref,0));
                         startService(new Intent(getBaseContext(), NotiService.class));
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt(servicePref, 1);

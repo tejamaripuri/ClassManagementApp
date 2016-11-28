@@ -118,7 +118,7 @@ public class RegisterFragment extends Fragment{
                     if(res == 1)
                     {
                         Toast.makeText(getActivity(), "Registered", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         startActivity(intent);
                     }
                     else if (res == 2)
