@@ -66,6 +66,7 @@ public class RosterActivity extends AppCompatActivity {
                 }
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -79,6 +80,7 @@ public class RosterActivity extends AppCompatActivity {
 
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
 

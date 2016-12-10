@@ -20,6 +20,7 @@ public class AttendenceStatsActivity extends AppCompatActivity {
                 Intent intent = new Intent(AttendenceStatsActivity.this, CommunicateActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -27,6 +28,7 @@ public class AttendenceStatsActivity extends AppCompatActivity {
                 Intent intent = new Intent(AttendenceStatsActivity.this, ApprovalsActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
     }

@@ -101,6 +101,7 @@ public class AttendenceActivity extends AppCompatActivity {
                 Intent intent = new Intent(AttendenceActivity.this, CommunicateActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -108,6 +109,7 @@ public class AttendenceActivity extends AppCompatActivity {
                 Intent intent = new Intent(AttendenceActivity.this, RosterActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
 

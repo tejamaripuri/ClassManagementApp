@@ -53,6 +53,7 @@ public class ApprovalsActivity extends ListActivity {
                 Intent intent = new Intent(ApprovalsActivity.this, AttendenceStatsActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -60,6 +61,7 @@ public class ApprovalsActivity extends ListActivity {
                 Intent intent = new Intent(ApprovalsActivity.this, RosterActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
     }

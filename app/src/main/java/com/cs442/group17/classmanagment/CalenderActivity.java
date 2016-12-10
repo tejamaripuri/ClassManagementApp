@@ -137,6 +137,7 @@ public class CalenderActivity extends AppCompatActivity {
                 Intent intent = new Intent(CalenderActivity.this, RosterActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -144,6 +145,7 @@ public class CalenderActivity extends AppCompatActivity {
                 Intent intent = new Intent(CalenderActivity.this, CommunicateActivity.class);
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
 

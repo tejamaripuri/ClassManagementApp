@@ -99,7 +99,7 @@ public class ChoiceActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
-        intent = new Intent(ChoiceActivity.this, LoginFragment.class);
+        intent = new Intent(ChoiceActivity.this, MainActivity.class);
         startActivity(intent);
     }
 }

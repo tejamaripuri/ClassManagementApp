@@ -71,6 +71,7 @@ public class CommunicateActivity extends AppCompatActivity {
 
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -83,6 +84,7 @@ public class CommunicateActivity extends AppCompatActivity {
                 }
                 intent.putExtra("subjectId", subjectId);
                 startActivity(intent);
+                finish();
             }
         });
     }
